@@ -1,0 +1,16 @@
+Simple RSS reader/viewer for Sky and BBC
+
+	Sky: http://news.sky.com/info/rss
+	BBC: http://www.bbc.co.uk/news/10628494
+
+Getting Up And Running
+
+1) Install
+
+npm install xml2js
+
+2) Run
+
+node server.js
+
+3) Goto to http://localhost:8080/
