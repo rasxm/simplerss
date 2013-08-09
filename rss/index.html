@@ -3,149 +3,149 @@
 <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <title>RSS Reader (Sky/BBC)</title>
-	 <link rel="stylesheet" href="css/jquit/jmetro.css">
-	 <link rel="stylesheet" href="css/jquery-layout.css">
+    <link rel="stylesheet" href="css/jquit/jmetro.css">
+    <link rel="stylesheet" href="css/jquery-layout.css">
     <script src="js/jquery/jquery.min.js"></script>
     <script src="js/jquery/jquery-ui.js"></script>
     <script src="js/jquery-layout/jquery.layout.js"></script>
     <script src="js/handlebars.js"></script>
     <style type="text/css">
-      iframe {
-        width: 100%;
-        height: 100%;
-        float: left;
-        border: 0px solid black;
-		  padding:	0 !important; /* iframes should not have padding */
-		  overflow:	auto !important;
-      }
-		body{ font-family:"Segoe UI", Helvetica, Verdana;font-size: 12px; margin: 50px;}
-		.ui-button{ font-family:"Segoe UI", Helvetica, Verdana;font-size: 11px; }
-		#feedselect { width: 160px; }
-	</style>
+    iframe {
+      width: 100%;
+      height: 100%;
+      float: left;
+      border: 0px solid black;
+      padding:   0 !important; /* iframes should not have padding */
+      overflow:   auto !important;
+    }
+    body{ font-family:"Segoe UI", Helvetica, Verdana;font-size: 12px; margin: 50px;}
+    .ui-button{ font-family:"Segoe UI", Helvetica, Verdana;font-size: 11px; }
+    #feedselect { width: 160px; }
+   </style>
 </head>
 <body>
 <div class="ui-layout-north topmenu">
-	<h2>RSS Reader (Sky/BBC)</h2>
+   <h2>RSS Reader (Sky/BBC)</h2>
 </div>
 <div class="ui-layout-west">
-	<div class="ui-widget">
-		<label for="feedselect">RSS Feeds (Type to select, eg: Home)</label>
-		<input id="feedselect">
-		<button id="getfeed">Go</button>
-	</div>
-	<hr>
-	<div id="feedheader"></div>
+   <div class="ui-widget">
+      <label for="feedselect">RSS Feeds (Type to select, eg: Home)</label>
+      <input id="feedselect">
+      <button id="getfeed">Go</button>
+   </div>
+   <hr>
+   <div id="feedheader"></div>
 </div>
 <div class="ui-layout-center">
-	<iframe id="news"></iframe>
+   <iframe id="news"></iframe>
 </div>
 </div>
 <!-- Script -->
-	<script>
-		var pageLayout;
-		var feedSelect = {}
+   <script>
+      var pageLayout;
+      var feedSelect = {}
 
-		/* Apply CSS button styling to all 'a href' and button elements */
-		function updateButtons()
-		{
-			$( "input[type=submit], a, button" ).button();
-		}
+      /* Apply CSS button styling to all 'a href' and button elements */
+      function updateButtons()
+      {
+         $( "input[type=submit], a, button" ).button();
+      }
 
-		/* Get RSS feed */
-		function getFeed(feedTitle)
-		{
-			var feedUrl = feedSelect[feedTitle];
-			if (feedUrl !== undefined)
-			{
-				$.ajax({
+      /* Get RSS feed */
+      function getFeed(feedTitle)
+      {
+         var feedUrl = feedSelect[feedTitle];
+         if (feedUrl !== undefined)
+         {
+            $.ajax({
 
-					type: "POST",
-					url: 'rssfeed',
-					data: feedUrl,
-					success: function(rssFeed) {
-						/* Render RSS items */
+               type: "POST",
+               url: 'rssfeed',
+               data: feedUrl,
+               success: function(rssFeed) {
+                  /* Render RSS items */
 
-						var feedDisplay  = $("#feed-template").html(); 
-						var feedTemplate = Handlebars.compile(feedDisplay); 
+                  var feedDisplay  = $("#feed-template").html(); 
+                  var feedTemplate = Handlebars.compile(feedDisplay); 
 
-						Handlebars.registerHelper('shortDesc', function(description) {
-							if (description.length > 40)
-								return description.substr(0,40) + ' ...';
-							return description;
-						});
+                  Handlebars.registerHelper('shortDesc', function(description) {
+                     if (description.length > 40)
+                        return description.substr(0,40) + ' ...';
+                     return description;
+                  });
 
-						$('#feedheader').html(feedTemplate(rssFeed));
-					}
-				});
-			}
-		}
+                  $('#feedheader').html(feedTemplate(rssFeed));
+               }
+            });
+         }
+      }
 
-		/* Get RSS feed list */
-		function getFeedList()
-		{
-			$.get('rsslist', function(rssProvider) {
-				var displaySelect = [];
-				for ( var i = 0; i < rssProvider.feed.length; i++)
-				{
-					var title = rssProvider.feed[i].title;
-					var host  = rssProvider.feed[i].host;
-					var path  = rssProvider.feed[i].path;
-					feedSelect[title] = { host: host, path: path };
-					displaySelect.push(title);
-				}
-				$("#feedselect").autocomplete({
-					source: displaySelect
-				});
-			});
-		}
+      /* Get RSS feed list */
+      function getFeedList()
+      {
+         $.get('rsslist', function(rssProvider) {
+            var displaySelect = [];
+            for ( var i = 0; i < rssProvider.feed.length; i++)
+            {
+               var title = rssProvider.feed[i].title;
+               var host  = rssProvider.feed[i].host;
+               var path  = rssProvider.feed[i].path;
+               feedSelect[title] = { host: host, path: path };
+               displaySelect.push(title);
+            }
+            $("#feedselect").autocomplete({
+               source: displaySelect
+            });
+         });
+      }
 
-		function showPage(url)
-		{
-			var iframe = $('#news');
-			$(iframe).attr('src', url);
-		}
+      function showPage(url)
+      {
+         var iframe = $('#news');
+         $(iframe).attr('src', url);
+      }
 
-		/* document ready */
-		$(document).ready(function ()
-		{
-			/* Create page layout */
-			pageLayout = $('body').layout({
-				north__closable: false,
-				north__resizable: false,
-				north__size: .10,
-				west__size: .23
-			});
+      /* document ready */
+      $(document).ready(function ()
+      {
+         /* Create page layout */
+         pageLayout = $('body').layout({
+            north__closable: false,
+            north__resizable: false,
+            north__size: .10,
+            west__size: .23
+         });
 
-			/* Apply button styling */
-			updateButtons();
+         /* Apply button styling */
+         updateButtons();
 
-			/* Event handlers */
-			$( "#getfeed" ).click(function() {
-				getFeed($('#feedselect').val());
-			});
+         /* Event handlers */
+         $( "#getfeed" ).click(function() {
+            getFeed($('#feedselect').val());
+         });
 
-			/* Init RSS */
-			getFeedList();
-		});
+         /* Init RSS */
+         getFeedList();
+      });
 
-	</script>
-	<script id="feed-template" type="text/x-handlebars-template"> 
-	<table>
-		 <tbody> 
-			  {{#feed}} 
-			  <tr> 
-					<td>
-						<img src="{{media}}" alt="{{description}}" width=40 height=40/>
-					</td>
-					<td width=300>
-						{{pubDate}}
-						</br>
-						<a id="{{id}}" href="{{link}}" onclick="javascript:showPage('{{link}}'); return false;">{{shortDesc description}}</a>
-					</td> 
-			  </tr> 
-			  {{/feed}} 
-		 </tbody> 
-	</table> 
-	</script>
+   </script>
+   <script id="feed-template" type="text/x-handlebars-template"> 
+   <table>
+       <tbody> 
+           {{#feed}} 
+           <tr> 
+               <td>
+                  <img src="{{media}}" alt="{{description}}" width=40 height=40/>
+               </td>
+               <td width=300>
+                  {{pubDate}}
+                  </br>
+                  <a id="{{id}}" href="{{link}}" onclick="javascript:showPage('{{link}}'); return false;">{{shortDesc description}}</a>
+               </td> 
+           </tr> 
+           {{/feed}} 
+       </tbody> 
+   </table> 
+   </script>
 </body>
 </html>
